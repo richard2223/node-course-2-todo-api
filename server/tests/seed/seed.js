@@ -19,11 +19,15 @@ const users = [{
   _id: userTwoId,
   email: 'nikki@deepred.co.za',
   password: 'userTwoPassword',
+  tokens: [{
+    access: 'auth',
+    token: jwt.sign({_id: userTwoId, access: 'auth'}, 'secret').toString()
+  }]
 }];
 
 const todos = [
-  { _id: new ObjectID(), text: 'first todo' },
-  { _id: new ObjectID(), text: '2nd todo', completed: true, completedAt: 0 },
+  { _id: new ObjectID(), text: 'first todo', _creator: userOneId },
+  { _id: new ObjectID(), text: '2nd todo', _creator: userTwoId, completed: true, completedAt: 0 },
 ];
 
 const populateTodos = (done) => {
