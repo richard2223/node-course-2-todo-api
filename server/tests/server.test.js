@@ -13,7 +13,7 @@ beforeEach(populateTodos);
 
 describe('POST /todos', () => {
   it('should create a new todo', (done) => {
-    var text = 'eat pussy';
+    var text = 'eat lunch';
     request(app)
       .post('/todos')
       .set('x-auth', users[0].tokens[0].token)
@@ -120,7 +120,7 @@ describe('DELETE /todos/:id', () => {
         }
 
         Todo.findById(hexId).then((todo) => {
-          expect(todo).toBeNull();
+          expect(todo).toBeFalsy();
           done();
         }).catch((e) => done(e));
       });
@@ -139,7 +139,7 @@ describe('DELETE /todos/:id', () => {
         }
 
         Todo.findById(hexId).then((todo) => {
-          expect(todo).not.toBeNull();
+          expect(todo).toBeTruthy();
           done();
         }).catch((e) => done(e));
       });
@@ -176,6 +176,7 @@ describe('PATCh /todos/:id', () => {
       .expect((res) => {
         expect(res.body.todo.text).toBe(text);
         expect(res.body.todo.completed).toBe(true);
+        expect(typeof res.body.todo.completedAt).toBe('number');
       })
       .end(done);
   });
@@ -202,7 +203,7 @@ describe('PATCh /todos/:id', () => {
       .expect((res) => {
         expect(res.body.todo.text).toBe(text);
         expect(res.body.todo.completed).toBe(false);
-        expect(res.body.todo.completedAt).toBeNull();
+        expect(res.body.todo.completedAt).toBeFalsy();
       })
       .end(done);
   });
@@ -298,8 +299,7 @@ describe('POST /users/login', () => {
            }
 
            User.findById(users[1]._id).then((user) => {
-             expect(user.tokens[1].access).toBe('auth');
-             expect(user.tokens[1].token).toBe(res.headers['x-auth']);
+             expect(user.toObject().tokens[1]).toMatchObject({access: 'auth', token: res.headers['x-auth']});
              done();
            }).catch((e) => done(e));
          });
@@ -314,7 +314,7 @@ describe('POST /users/login', () => {
          })
          .expect(400)
          .expect((res) => {
-           expect(res.headers['x-auth']).not.toBeTruthy();
+           expect(res.headers['x-auth']).toBeFalsy();
          })
          .end((err, res) => {
            if (err) {
