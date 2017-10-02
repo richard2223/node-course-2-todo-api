@@ -22,7 +22,7 @@ app.post('/todos', authenticate, (req, res) => {
     _creator: req.user._id
   });
   todo.save().then((todo) => {
-    res.send({todo});
+    res.send(todo);
   }).catch((e) => {
     res.status(400).send(e);
   })
